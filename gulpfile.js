@@ -230,6 +230,8 @@ function testTaskMaker(options = {}) {
     options[opt] = options[opt] || argv[opt];
   })
 
+  options.disableFeatures = options.disableFeatures || helpers.getDisabledFeatures();
+
   return function test(done) {
     if (options.notest) {
       done();
@@ -273,7 +275,7 @@ function testTaskMaker(options = {}) {
           process.exit(1);
         });
     } else {
-      var karmaConf = karmaConfMaker(false, options.browserstack, options.watch, options.file);
+      var karmaConf = karmaConfMaker(false, options.browserstack, options.watch, options.file, options.disableFeatures);
 
       var browserOverride = helpers.parseBrowserArgs(argv);
       if (browserOverride.length > 0) {
@@ -423,7 +425,8 @@ gulp.task('build-bundle-verbose', gulp.series(makeWebpackPkg({
 
 // public tasks (dependencies are needed for each task since they can be ran on their own)
 gulp.task('test-only', test);
-gulp.task('test', gulp.series(clean, lint, 'test-only'));
+gulp.task('test-all-features-disabled', testTaskMaker({browserstack: false, disableFeatures: require('./features.json')}))
+gulp.task('test', gulp.series(clean, lint, 'test-all-features-disabled', 'test-only'));
 
 gulp.task('test-coverage', gulp.series(clean, testCoverage));
 gulp.task(viewCoverage);
