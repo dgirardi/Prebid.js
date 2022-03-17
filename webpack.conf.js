@@ -29,6 +29,12 @@ module.exports = {
     const entry = {
       'prebid-core': {
         import: './src/prebid.js'
+      },
+      'prebid.less': {
+        import: [
+          './src/prebid.js',
+          './modules/prebidServerBidAdapter/index.js'
+        ]
       }
     };
     const selectedModules = new Set(helpers.getArgModules());

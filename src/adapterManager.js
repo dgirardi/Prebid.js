@@ -187,13 +187,19 @@ adapterManager.makeBidRequests = hook('sync', function (adUnits, auctionStart, a
   }
   adUnits = setupAdUnitMediaTypes(adUnits, labels);
 
-  let bidderCodes = getBidderCodes(adUnits);
-  if (config.getConfig('bidderSequence') === RANDOM) {
-    bidderCodes = shuffle(bidderCodes);
-  }
   const refererInfo = getRefererInfo();
+  let clientBidderCodes = (() => {
+    if (FEATURES.CLIENT_BIDDERS) {
+      let bidderCodes = getBidderCodes(adUnits);
+      if (config.getConfig('bidderSequence') === RANDOM) {
+        bidderCodes = shuffle(bidderCodes);
+      }
 
-  let clientBidderCodes = bidderCodes;
+      return bidderCodes;
+    } else {
+      return []
+    }
+  })()
 
   let bidRequests = [];
 
@@ -216,10 +222,12 @@ adapterManager.makeBidRequests = hook('sync', function (adUnits, auctionStart, a
     }
   })
 
-  // don't call these client side (unless client request is needed for testing)
-  clientBidderCodes = bidderCodes.filter(bidderCode => {
-    return !includes(allS2SBidders, bidderCode) || includes(clientTestAdapters, bidderCode)
-  });
+  if (FEATURES.CLIENT_BIDDERS) {
+    // don't call these client side (unless client request is needed for testing)
+    clientBidderCodes = clientBidderCodes.filter(bidderCode => {
+      return !includes(allS2SBidders, bidderCode) || includes(clientTestAdapters, bidderCode)
+    });
+  }
 
   // these are called on the s2s adapter
   let adaptersServerSide = allS2SBidders;
@@ -277,28 +285,30 @@ adapterManager.makeBidRequests = hook('sync', function (adUnits, auctionStart, a
     }
   })
 
-  // client adapters
-  let adUnitsClientCopy = getAdUnitCopyForClientAdapters(adUnits);
-  clientBidderCodes.forEach(bidderCode => {
-    const bidderRequestId = getUniqueIdentifierStr();
-    const bidderRequest = {
-      bidderCode,
-      auctionId,
-      bidderRequestId,
-      bids: hookedGetBids({bidderCode, auctionId, bidderRequestId, 'adUnits': deepClone(adUnitsClientCopy), labels, src: 'client'}),
-      auctionStart: auctionStart,
-      timeout: cbTimeout,
-      refererInfo
-    };
-    const adapter = _bidderRegistry[bidderCode];
-    if (!adapter) {
-      logError(`Trying to make a request for bidder that does not exist: ${bidderCode}`);
-    }
+  if (FEATURES.CLIENT_BIDDERS) {
+    // client adapters
+    let adUnitsClientCopy = getAdUnitCopyForClientAdapters(adUnits);
+    clientBidderCodes.forEach(bidderCode => {
+      const bidderRequestId = getUniqueIdentifierStr();
+      const bidderRequest = {
+        bidderCode,
+        auctionId,
+        bidderRequestId,
+        bids: hookedGetBids({bidderCode, auctionId, bidderRequestId, 'adUnits': deepClone(adUnitsClientCopy), labels, src: 'client'}),
+        auctionStart: auctionStart,
+        timeout: cbTimeout,
+        refererInfo
+      };
+      const adapter = _bidderRegistry[bidderCode];
+      if (!adapter) {
+        logError(`Trying to make a request for bidder that does not exist: ${bidderCode}`);
+      }
 
-    if (adapter && bidderRequest.bids && bidderRequest.bids.length !== 0) {
-      bidRequests.push(bidderRequest);
-    }
-  });
+      if (adapter && bidderRequest.bids && bidderRequest.bids.length !== 0) {
+        bidRequests.push(bidderRequest);
+      }
+    });
+  }
 
   if (gdprDataHandler.getConsentData()) {
     bidRequests.forEach(bidRequest => {
@@ -465,6 +475,10 @@ adapterManager.registerBidAdapter = function (bidAdapter, bidderCode, {supported
 };
 
 adapterManager.aliasBidAdapter = function (bidderCode, alias, options) {
+  if (!FEATURES.CLIENT_BIDDERS) {
+    logError('Bidder aliases not supported for Prebid.less')
+    return;
+  }
   let existingAlias = _bidderRegistry[alias];
 
   if (typeof existingAlias === 'undefined') {

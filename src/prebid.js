@@ -603,31 +603,30 @@ $$PREBID_GLOBAL$$.requestBids = hook('async', function ({ bidsBackHandler, timeo
   adUnits.forEach(adUnit => {
     // get the adunit's mediaTypes, defaulting to banner if mediaTypes isn't present
     const adUnitMediaTypes = Object.keys(adUnit.mediaTypes || { 'banner': 'banner' });
-
-    // get the bidder's mediaTypes
-    const allBidders = adUnit.bids.map(bid => bid.bidder);
-    const bidderRegistry = adapterManager.bidderRegistry;
-
-    const bidders = (s2sBidders) ? allBidders.filter(bidder => !includes(s2sBidders, bidder)) : allBidders;
-
     adUnit.transactionId = generateUUID();
 
-    bidders.forEach(bidder => {
-      const adapter = bidderRegistry[bidder];
-      const spec = adapter && adapter.getSpec && adapter.getSpec();
-      // banner is default if not specified in spec
-      const bidderMediaTypes = (spec && spec.supportedMediaTypes) || ['banner'];
+    if (FEATURES.CLIENT_BIDDERS) {
+      const allBidders = adUnit.bids.map(bid => bid.bidder);
+      const bidderRegistry = adapterManager.bidderRegistry;
+      const bidders = (s2sBidders) ? allBidders.filter(bidder => !includes(s2sBidders, bidder)) : allBidders;
 
-      // check if the bidder's mediaTypes are not in the adUnit's mediaTypes
-      const bidderEligible = adUnitMediaTypes.some(type => includes(bidderMediaTypes, type));
-      if (!bidderEligible) {
-        // drop the bidder from the ad unit if it's not compatible
-        logWarn(unsupportedBidderMessage(adUnit, bidder));
-        adUnit.bids = adUnit.bids.filter(bid => bid.bidder !== bidder);
-      } else {
-        adunitCounter.incrementBidderRequestsCounter(adUnit.code, bidder);
-      }
-    });
+      bidders.forEach(bidder => {
+        const adapter = bidderRegistry[bidder];
+        const spec = adapter && adapter.getSpec && adapter.getSpec();
+        // banner is default if not specified in spec
+        const bidderMediaTypes = (spec && spec.supportedMediaTypes) || ['banner'];
+
+        // check if the bidder's mediaTypes are not in the adUnit's mediaTypes
+        const bidderEligible = adUnitMediaTypes.some(type => includes(bidderMediaTypes, type));
+        if (!bidderEligible) {
+          // drop the bidder from the ad unit if it's not compatible
+          logWarn(unsupportedBidderMessage(adUnit, bidder));
+          adUnit.bids = adUnit.bids.filter(bid => bid.bidder !== bidder);
+        } else {
+          adunitCounter.incrementBidderRequestsCounter(adUnit.code, bidder);
+        }
+      });
+    }
     adunitCounter.incrementRequestsCounter(adUnit.code);
   });
 
