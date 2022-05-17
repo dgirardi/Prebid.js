@@ -9,7 +9,28 @@
  */
 
 import { config } from './config.js';
-import { logWarn } from './utils.js';
+import {logWarn} from './utils.js';
+
+/**
+ * Convert urls of the form "example.com" or "//example.com" to "http(s)://example.com"
+ */
+export function ensureProtocol(url, win = window) {
+  if (!url) return url;
+  if (/\w+:\/\//.exec(url)) {
+    // url already has protocol
+    return url;
+  }
+  let windowProto = win.location.protocol;
+  try {
+    windowProto = win.top.location.protocol;
+  } catch (e) {}
+  if (/^\/\//.exec(url)) {
+    // url uses relative protocol ("//example.com")
+    return windowProto + url;
+  } else {
+    return `${windowProto}//${url}`;
+  }
+}
 
 /**
  * @param {Window} win Window
@@ -79,7 +100,7 @@ export function detectReferer(win) {
     const ancestors = getAncestorOrigins(win);
     const maxNestedIframes = config.getConfig('maxNestedIframes');
     let currentWindow;
-    let bestReferrer;
+    let bestLocation;
     let bestCanonicalUrl;
     let reachedTop = false;
     let level = 0;
@@ -91,7 +112,7 @@ export function detectReferer(win) {
       const wasInAmpFrame = inAmpFrame;
       let currentLocation;
       let crossOrigin = false;
-      let foundReferrer = null;
+      let foundLocation = null;
 
       inAmpFrame = false;
       currentWindow = currentWindow ? currentWindow.parent : win;
@@ -107,8 +128,8 @@ export function detectReferer(win) {
           const context = previousWindow.context;
 
           try {
-            foundReferrer = context.sourceUrl;
-            bestReferrer = foundReferrer;
+            foundLocation = context.sourceUrl;
+            bestLocation = foundLocation;
 
             valuesFromAmp = true;
 
@@ -124,10 +145,11 @@ export function detectReferer(win) {
           logWarn('Trying to access cross domain iframe. Continuing without referrer and location');
 
           try {
+            // the referrer to an iframe is the parent window
             const referrer = previousWindow.document.referrer;
 
             if (referrer) {
-              foundReferrer = referrer;
+              foundLocation = referrer;
 
               if (currentWindow === win.top) {
                 reachedTop = true;
@@ -135,18 +157,18 @@ export function detectReferer(win) {
             }
           } catch (e) { /* Do nothing */ }
 
-          if (!foundReferrer && ancestors && ancestors[level - 1]) {
-            foundReferrer = ancestors[level - 1];
+          if (!foundLocation && ancestors && ancestors[level - 1]) {
+            foundLocation = ancestors[level - 1];
           }
 
-          if (foundReferrer && !valuesFromAmp) {
-            bestReferrer = foundReferrer;
+          if (foundLocation && !valuesFromAmp) {
+            bestLocation = foundLocation;
           }
         }
       } else {
         if (currentLocation) {
-          foundReferrer = currentLocation;
-          bestReferrer = foundReferrer;
+          foundLocation = currentLocation;
+          bestLocation = foundLocation;
           valuesFromAmp = false;
 
           if (currentWindow === win.top) {
@@ -165,19 +187,29 @@ export function detectReferer(win) {
         }
       }
 
-      stack.push(foundReferrer);
+      stack.push(foundLocation);
       level++;
     } while (currentWindow !== win.top && level < maxNestedIframes);
 
     stack.reverse();
 
+    let topLocation, ref;
+    try {
+      topLocation = win.top.location.href;
+      ref = win.top.document.referrer;
+    } catch (e) {}
+
+    const page = ensureProtocol(bestCanonicalUrl, win) || topLocation || bestLocation || null;
+
     return {
-      referer: bestReferrer || null,
       reachedTop,
       isAmp: valuesFromAmp,
       numIframes: level - 1,
       stack,
-      canonicalUrl: bestCanonicalUrl || null
+      location: bestLocation || null, // our best guess at page location - the topmost reachable frame URL
+      canonicalUrl: bestCanonicalUrl || null, // canonical URL as provided with setConfig({pageUrl}) or link[rel="canonical"], in that order of priority
+      page: page, // canonicalUrl, falling back to location
+      ref: ref || null, // window.top.document.referrer, if available
     };
   }
 
