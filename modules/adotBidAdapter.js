@@ -44,19 +44,6 @@ function tryParse(data) {
 }
 
 /**
- * Extract domain from given url
- *
- * @param {string} url
- * @returns {string|null} Extracted domain
- */
-function extractDomainFromURL(url) {
-  if (!url || !isStr(url)) return null;
-  const domain = url.match(DOMAIN_REGEX);
-  if (isArray(domain) && domain.length === 2) return domain[1];
-  return null;
-}
-
-/**
  * Create and return site OpenRtb object from given bidderRequest
  *
  * @param {BidderRequest} bidderRequest
@@ -65,13 +52,13 @@ function extractDomainFromURL(url) {
 function getOpenRTBSiteObject(bidderRequest) {
   if (!bidderRequest || !bidderRequest.refererInfo) return null;
 
-  const domain = extractDomainFromURL(bidderRequest.refererInfo.referer);
+  const domain = bidderRequest.refererInfo.domain;
   const publisherId = config.getConfig('adot.publisherId');
 
   if (!domain) return null;
 
   return {
-    page: bidderRequest.refererInfo.referer,
+    page: bidderRequest.refererInfo.page,
     domain: domain,
     name: domain,
     publisher: {
