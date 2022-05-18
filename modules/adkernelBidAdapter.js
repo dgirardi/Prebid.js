@@ -226,7 +226,7 @@ registerBidder(spec);
  * @param refererInfo {refererInfo}
  */
 function groupImpressionsByHostZone(bidRequests, refererInfo) {
-  let secure = (refererInfo && refererInfo.referer.indexOf('https:') === 0);
+  let secure = (refererInfo && refererInfo.page?.indexOf('https:') === 0);
   return Object.values(
     bidRequests.map(bidRequest => buildImp(bidRequest, secure))
       .reduce((acc, curr, index) => {
@@ -535,14 +535,13 @@ function getLanguage() {
  * Creates site description object
  */
 function createSite(refInfo, fpd) {
-  let url = parseUrl(refInfo.referer);
   let site = {
-    'domain': url.hostname,
-    'page': `${url.protocol}://${url.hostname}${url.pathname}`
+    'domain': refInfo.domain,
+    'page': refInfo.page
   };
   mergeDeep(site, fpd.site);
-  if (!inIframe() && document.referrer) {
-    site.ref = document.referrer;
+  if (refInfo.ref != null) {
+    site.ref = refInfo.ref;
   } else {
     delete site.ref;
   }
