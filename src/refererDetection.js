@@ -228,16 +228,36 @@ export function detectReferer(win) {
       isAmp: valuesFromAmp,
       numIframes: level - 1,
       stack,
-      topmostLocation: bestLocation || null, // location of the topmost accessible frame
-      location, // location of window.top, if available
-      canonicalUrl: bestCanonicalUrl || null, // canonical URL as provided with setConfig({pageUrl}) or link[rel="canonical"], in that order of priority
-      page, // canonicalUrl, falling back to location
-      domain: parseDomain(page) || null, // the domain portion of `page`
-      ref: ref || null, // window.top.document.referrer, if available
+      topmostLocation: bestLocation || null,
+      location,
+      canonicalUrl: bestCanonicalUrl || null,
+      page,
+      domain: parseDomain(page) || null,
+      ref: ref || null,
     };
   }
 
   return refererInfo;
 }
 
+// TODO: the meaning of "reachedTop" seems to be intentionally ambiguous - best to leave them out of
+// the typedef for now. (for example, unit tests enforce that "reachedTop" should be false in some situations where we
+// happily provide a location for the top).
+
+/**
+ * @typedef {Object} refererInfo
+ * @property {string|null} location the browser's location, or null if not available (due to cross-origin restrictions)
+ * @property {string|null} canonicalUrl the site's canonical URL as set by the publisher, through setConfig({pageUrl}) or <link rel="canonical" />
+ * @property {string|null} page the best candidate for the current page URL: `canonicalUrl`, falling back to `location`
+ * @property {string|null} domain the domain portion of `page`
+ * @property {string|null} the referrer (document.referrer) to the current page, or null if not available (due to cross-origin restricitons)
+ * @property {string} topmostLocation of the top-most frame for which we could guess the location. Outside of cross-origin scenarios, this is
+ *                equivalent to `location`.
+ * @property {number} numIframes number of steps between window.self and window.top
+ * @property {Array[string|null]} stack our best guess at the location for each frame, in the direction top -> self.
+ */
+
+/**
+ * @type {function(): refererInfo}
+ */
 export const getRefererInfo = detectReferer(window);
