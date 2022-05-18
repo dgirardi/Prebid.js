@@ -165,23 +165,6 @@ function getHostname(bidderRequest) {
   return '';
 }
 
-/* Get current page canonical url */
-function getCanonicalUrl() {
-  let link;
-  if (window.self !== window.top) {
-    try {
-      link = window.top.document.head.querySelector('link[rel="canonical"][href]');
-    } catch (e) { }
-  } else {
-    link = document.head.querySelector('link[rel="canonical"][href]');
-  }
-
-  if (link) {
-    return link.href;
-  }
-  return '';
-}
-
 /* Get mediatype from bidRequest */
 function getMediatype(bidRequest) {
   if (deepAccess(bidRequest, 'mediaTypes.banner')) {
@@ -236,20 +219,21 @@ function createEndpointQS(bidderRequest) {
 
   if (bidderRequest) {
     const ref = bidderRequest.refererInfo;
-    if (ref) {
-      qs.RefererUrl = encodeURIComponent(ref.referer);
+    if (ref?.location) {
+      // TODO: is 'location' the right value here?
+      qs.RefererUrl = encodeURIComponent(ref.location);
       if (ref.numIframes > 0) {
         qs.SafeFrame = true;
       }
     }
   }
 
-  const can = getCanonicalUrl();
+  const can = bidderRequest?.refererInfo?.canonicalUrl;
   if (can) {
     qs.CanonicalUrl = encodeURIComponent(can);
   }
 
-  const domain = config.getConfig('publisherDomain');
+  const domain = bidderRequest?.refererInfo?.domain;
   if (domain) {
     qs.PublisherDomain = encodeURIComponent(domain);
   }
