@@ -1381,21 +1381,13 @@ describe('Adagio bid adapter', () => {
 
   describe('site information using refererDetection or window.top', function() {
     it('should returns domain, page and window.referrer in a window.top context', function() {
-      sandbox.stub(utils, 'getWindowTop').returns({
-        location: {
-          hostname: 'test.io',
-          href: 'https://test.io/article/a.html'
-        },
-        document: {
-          referrer: 'https://google.com'
-        }
-      });
-
       const bidderRequest = new BidderRequestBuilder({
         refererInfo: {
           numIframes: 0,
           reachedTop: true,
-          referer: 'https://test.io/article/a.html'
+          page: 'https://test.io/article/a.html',
+          domain: 'test.io',
+          ref: 'https://google.com'
         }
       }).build();
 
@@ -1418,13 +1410,15 @@ describe('Adagio bid adapter', () => {
       const info = {
         numIframes: 0,
         reachedTop: true,
-        referer: 'http://level.io/',
+        page: 'http://level.io/',
         stack: [
           'http://level.io/',
           'http://example.com/iframe1.html',
           'http://example.com/iframe2.html'
         ],
-        canonicalUrl: ''
+        canonicalUrl: '',
+        domain: 'level.io',
+        ref: null,
       };
 
       const bidderRequest = new BidderRequestBuilder({
@@ -1445,13 +1439,16 @@ describe('Adagio bid adapter', () => {
       const info = {
         numIframes: 2,
         reachedTop: false,
-        referer: 'http://example.com/iframe1.html',
+        topmostLocation: 'http://example.com/iframe1.html',
         stack: [
           null,
           'http://example.com/iframe1.html',
           'http://example.com/iframe2.html'
         ],
-        canonicalUrl: ''
+        canonicalUrl: '',
+        page: null,
+        domain: null,
+        ref: null
       };
 
       const bidderRequest = new BidderRequestBuilder({
