@@ -82,8 +82,8 @@ export const spec = {
       }
 
       if (!site.page) {
-        site.page = bidderRequest.refererInfo.referer;
-        site.domain = parseUrl(bidderRequest.refererInfo.referer).hostname;
+        site.page = bidderRequest.refererInfo.page;
+        site.domain = bidderRequest.refererInfo.domain;
       }
     }
 
