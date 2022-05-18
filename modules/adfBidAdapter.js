@@ -81,7 +81,7 @@ export const spec = {
       }
 
       if (!site.page) {
-        site.page = bidderRequest.refererInfo.referer;
+        site.page = bidderRequest.refererInfo.page;
       }
     }
 

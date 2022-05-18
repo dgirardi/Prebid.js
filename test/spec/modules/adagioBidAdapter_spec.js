@@ -16,7 +16,6 @@ import { loadExternalScript } from '../../../src/adloader.js';
 import * as utils from '../../../src/utils.js';
 import { config } from '../../../src/config.js';
 import { NATIVE } from '../../../src/mediaTypes.js';
-import * as prebidGlobal from 'src/prebidGlobal.js';
 import { executeRenderer } from '../../../src/Renderer.js';
 
 const BidRequestBuilder = function BidRequestBuilder(options) {
