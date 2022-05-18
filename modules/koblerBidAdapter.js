@@ -74,9 +74,8 @@ export const onBidWon = function (bid) {
 export const onTimeout = function (timeoutDataArray) {
   if (isArray(timeoutDataArray)) {
     const refererInfo = getRefererInfo();
-    const pageUrl = (refererInfo && refererInfo.referer)
-      ? refererInfo.referer
-      : window.location.href;
+    // TODO: does it make sense to fall back to window.location.href?
+    const pageUrl = refererInfo?.page || window.location.href;
     timeoutDataArray.forEach(timeoutData => {
       const query = parseQueryStringParameters({
         ad_unit_code: timeoutData.adUnitCode,

@@ -1,4 +1,4 @@
-import {detectReferer, ensureProtocol} from 'src/refererDetection.js';
+import {detectReferer, ensureProtocol, parseDomain} from 'src/refererDetection.js';
 import {config} from 'src/config.js';
 import {expect} from 'chai';
 
@@ -103,6 +103,7 @@ describe('Referer detection', () => {
           result = detectReferer(testWindow)();
 
         expect(result).to.deep.equal({
+          topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
           isAmp: false,
@@ -111,6 +112,7 @@ describe('Referer detection', () => {
           canonicalUrl: null,
           page: 'https://example.com/some/page',
           ref: 'https://othersite.com/',
+          domain: 'example.com',
         });
       });
 
@@ -119,6 +121,7 @@ describe('Referer detection', () => {
           result = detectReferer(testWindow)();
 
         expect(result).to.deep.equal({
+          topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
           isAmp: false,
@@ -127,6 +130,7 @@ describe('Referer detection', () => {
           canonicalUrl: 'https://example.com/canonical/page',
           page: 'https://example.com/canonical/page',
           ref: 'https://othersite.com/',
+          domain: 'example.com'
         });
       });
     });
@@ -137,6 +141,7 @@ describe('Referer detection', () => {
           result = detectReferer(testWindow)();
 
         expect(result).to.deep.equal({
+          topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
           isAmp: false,
@@ -148,7 +153,8 @@ describe('Referer detection', () => {
           ],
           canonicalUrl: null,
           page: 'https://example.com/some/page',
-          ref: 'https://othersite.com/'
+          ref: 'https://othersite.com/',
+          domain: 'example.com'
         });
       });
 
@@ -157,6 +163,7 @@ describe('Referer detection', () => {
           result = detectReferer(testWindow)();
 
         expect(result).to.deep.equal({
+          topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
           isAmp: false,
@@ -168,17 +175,19 @@ describe('Referer detection', () => {
           ],
           canonicalUrl: 'https://example.com/canonical/page',
           page: 'https://example.com/canonical/page',
-          ref: 'https://othersite.com/'
+          ref: 'https://othersite.com/',
+          domain: 'example.com'
         });
       });
 
       it('Should override canonical URL (and page) with config pageUrl', () => {
-        config.setConfig({'pageUrl': 'https://testUrl.com'});
+        config.setConfig({'pageUrl': 'https://testurl.com'});
 
         const testWindow = buildWindowTree(['https://example.com/some/page', 'https://example.com/other/page', 'https://example.com/third/page'], 'https://othersite.com/', 'https://example.com/canonical/page'),
           result = detectReferer(testWindow)();
 
         expect(result).to.deep.equal({
+          topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
           isAmp: false,
@@ -188,9 +197,10 @@ describe('Referer detection', () => {
             'https://example.com/other/page',
             'https://example.com/third/page'
           ],
-          canonicalUrl: 'https://testUrl.com',
-          page: 'https://testUrl.com',
+          canonicalUrl: 'https://testurl.com',
+          page: 'https://testurl.com',
           ref: 'https://othersite.com/',
+          domain: 'testurl.com'
         });
       });
     });
@@ -203,6 +213,7 @@ describe('Referer detection', () => {
 
       expect(result).to.deep.equal({
         location: 'https://example.com/some/page',
+        topmostLocation: 'https://example.com/some/page',
         reachedTop: true,
         isAmp: false,
         numIframes: 1,
@@ -213,6 +224,7 @@ describe('Referer detection', () => {
         canonicalUrl: null,
         page: 'https://example.com/some/page',
         ref: null,
+        domain: 'example.com'
       });
     });
 
@@ -221,6 +233,7 @@ describe('Referer detection', () => {
         result = detectReferer(testWindow)();
 
       expect(result).to.deep.equal({
+        topmostLocation: 'https://example.com/some/page',
         location: 'https://example.com/some/page',
         reachedTop: true,
         isAmp: false,
@@ -233,15 +246,17 @@ describe('Referer detection', () => {
         canonicalUrl: null,
         page: 'https://example.com/some/page',
         ref: null,
+        domain: 'example.com',
       });
     });
 
-    it('Should return the second iframe location with three cross-origin windows and no ancessorOrigins', () => {
+    it('Should return the second iframe location with three cross-origin windows and no ancestorOrigins', () => {
       const testWindow = buildWindowTree(['https://example.com/some/page', 'https://safe.frame/ad', 'https://otherfr.ame/ad'], 'https://othersite.com/', 'https://canonical.example.com/'),
         result = detectReferer(testWindow)();
 
       expect(result).to.deep.equal({
-        location: 'https://safe.frame/ad',
+        topmostLocation: 'https://safe.frame/ad',
+        location: null,
         reachedTop: false,
         isAmp: false,
         numIframes: 2,
@@ -251,8 +266,9 @@ describe('Referer detection', () => {
           'https://otherfr.ame/ad'
         ],
         canonicalUrl: null,
-        page: 'https://safe.frame/ad',
-        ref: null
+        page: null,
+        ref: null,
+        domain: null
       });
     });
 
@@ -261,6 +277,7 @@ describe('Referer detection', () => {
         result = detectReferer(testWindow)();
 
       expect(result).to.deep.equal({
+        topmostLocation: 'https://example.com/',
         location: 'https://example.com/',
         reachedTop: false,
         isAmp: false,
@@ -273,6 +290,7 @@ describe('Referer detection', () => {
         canonicalUrl: null,
         page: 'https://example.com/',
         ref: null,
+        domain: 'example.com'
       });
     });
   });
@@ -290,6 +308,7 @@ describe('Referer detection', () => {
 
       expect(result).to.deep.equal({
         location: 'https://example.com/some/page/amp/',
+        topmostLocation: 'https://example.com/some/page/amp/',
         reachedTop: true,
         isAmp: true,
         numIframes: 1,
@@ -299,7 +318,8 @@ describe('Referer detection', () => {
         ],
         canonicalUrl: 'https://example.com/some/page/',
         page: 'https://example.com/some/page/',
-        ref: null
+        ref: null,
+        domain: 'example.com'
       });
     });
 
@@ -314,6 +334,7 @@ describe('Referer detection', () => {
       const result = detectReferer(testWindow)();
 
       expect(result).to.deep.equal({
+        topmostLocation: 'https://example.com/some/page/amp/',
         location: 'https://example.com/some/page/amp/',
         reachedTop: true,
         isAmp: true,
@@ -325,6 +346,7 @@ describe('Referer detection', () => {
         canonicalUrl: 'https://example.com/some/page/',
         page: 'https://example.com/some/page/',
         ref: null,
+        domain: 'example.com'
       });
     });
 
@@ -340,6 +362,7 @@ describe('Referer detection', () => {
         const result = detectReferer(testWindow)();
 
         expect(result).to.deep.equal({
+          topmostLocation: 'https://example.com/some/page/amp/',
           location: 'https://example.com/some/page/amp/',
           reachedTop: false,
           isAmp: true,
@@ -352,6 +375,7 @@ describe('Referer detection', () => {
           canonicalUrl: 'https://example.com/some/page/',
           page: 'https://example.com/some/page/',
           ref: null,
+          domain: 'example.com',
         });
       });
 
@@ -367,6 +391,7 @@ describe('Referer detection', () => {
 
         expect(result).to.deep.equal({
           location: 'https://example.com/some/page/amp/',
+          topmostLocation: 'https://example.com/some/page/amp/',
           reachedTop: false,
           isAmp: true,
           numIframes: 2,
@@ -378,6 +403,7 @@ describe('Referer detection', () => {
           canonicalUrl: 'https://example.com/some/page/',
           page: 'https://example.com/some/page/',
           ref: null,
+          domain: 'example.com'
         });
       });
 
@@ -393,6 +419,7 @@ describe('Referer detection', () => {
 
         expect(result).to.deep.equal({
           location: 'https://example.com/some/page/amp/',
+          topmostLocation: 'https://example.com/some/page/amp/',
           reachedTop: false,
           isAmp: true,
           numIframes: 3,
@@ -404,7 +431,8 @@ describe('Referer detection', () => {
           ],
           canonicalUrl: 'https://example.com/some/page/',
           page: 'https://example.com/some/page/',
-          ref: null
+          ref: null,
+          domain: 'example.com',
         });
       });
     });
@@ -466,5 +494,22 @@ describe('ensureProtocol', () => {
         });
       });
     });
-  })
   });
+});
+
+describe('parseDomain', () => {
+  Object.entries({
+    'example.com': 'example.com',
+    'www.example.com': 'example.com',
+    'example.com:443': 'example.com:443',
+    'www.sub.example.com': 'sub.example.com',
+    'example.com/page': 'example.com',
+    'www.example.com:443/page': 'example.com:443',
+    'http://www.example.com:443/page?query=value': 'example.com:443',
+    '': undefined
+  }).forEach(([input, expected]) => {
+    it(`should extract domain from '${input}' -> '${expected}`, () => {
+      expect(parseDomain(input)).to.equal(expected);
+    });
+  })
+});

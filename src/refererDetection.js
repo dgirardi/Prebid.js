@@ -12,7 +12,7 @@ import { config } from './config.js';
 import {logWarn} from './utils.js';
 
 /**
- * Convert urls of the form "example.com" or "//example.com" to "http(s)://example.com"
+ * Prepend a URL with the page's protocol (http/https), if necessary.
  */
 export function ensureProtocol(url, win = window) {
   if (!url) return url;
@@ -30,6 +30,23 @@ export function ensureProtocol(url, win = window) {
   } else {
     return `${windowProto}//${url}`;
   }
+}
+
+/**
+ * Extract the domain portion from a URL.
+ * @param url
+ */
+export function parseDomain(url) {
+  try {
+    url = new URL(ensureProtocol(url));
+  } catch (e) {
+    return;
+  }
+  url = url.host;
+  if (url.startsWith('www.')) {
+    url = url.substring(4);
+  }
+  return url;
 }
 
 /**
@@ -106,6 +123,7 @@ export function detectReferer(win) {
     let level = 0;
     let valuesFromAmp = false;
     let inAmpFrame = false;
+    let hasTopLocation = false;
 
     do {
       const previousWindow = currentWindow;
@@ -130,6 +148,7 @@ export function detectReferer(win) {
           try {
             foundLocation = context.sourceUrl;
             bestLocation = foundLocation;
+            hasTopLocation = true;
 
             valuesFromAmp = true;
 
@@ -159,6 +178,9 @@ export function detectReferer(win) {
 
           if (!foundLocation && ancestors && ancestors[level - 1]) {
             foundLocation = ancestors[level - 1];
+            if (currentWindow === win.top) {
+              hasTopLocation = true;
+            }
           }
 
           if (foundLocation && !valuesFromAmp) {
@@ -193,22 +215,24 @@ export function detectReferer(win) {
 
     stack.reverse();
 
-    let topLocation, ref;
+    let ref;
     try {
-      topLocation = win.top.location.href;
       ref = win.top.document.referrer;
     } catch (e) {}
 
-    const page = ensureProtocol(bestCanonicalUrl, win) || topLocation || bestLocation || null;
+    const location = reachedTop || hasTopLocation ? bestLocation : null;
+    const page = ensureProtocol(bestCanonicalUrl, win) || location;
 
     return {
       reachedTop,
       isAmp: valuesFromAmp,
       numIframes: level - 1,
       stack,
-      location: bestLocation || null, // our best guess at page location - the topmost reachable frame URL
+      topmostLocation: bestLocation || null, // location of the topmost accessible frame
+      location, // location of window.top, if available
       canonicalUrl: bestCanonicalUrl || null, // canonical URL as provided with setConfig({pageUrl}) or link[rel="canonical"], in that order of priority
-      page: page, // canonicalUrl, falling back to location
+      page, // canonicalUrl, falling back to location
+      domain: parseDomain(page) || null, // the domain portion of `page`
       ref: ref || null, // window.top.document.referrer, if available
     };
   }
