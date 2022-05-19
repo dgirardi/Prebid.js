@@ -109,8 +109,9 @@ export const amxIdSubmodule = {
 
     const params = {
       tagId: deepAccess(config, 'params.tagId', ''),
-      ref: ref.referer,
-      u: ref.stack[0] || getWindowTop().location.href,
+      // TODO: are these referer values correct?
+      ref: ref.ref,
+      u: ref.location,
       v: '$prebid.version$',
       vg: '$$PREBID_GLOBAL$$',
       us_privacy: usp,
