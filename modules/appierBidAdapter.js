@@ -44,10 +44,7 @@ export const spec = {
     const payload = {
       'bids': bidRequests,
       // TODO: please do not pass internal data structures over to the network
-      'refererInfo': {
-        ...bidderRequest.refererInfo,
-        referer: bidderRequest.refererInfo.topmostLocation,
-      },
+      'refererInfo': bidderRequest.refererInfo.legacy,
       'version': ADAPTER_VERSION
     };
     return [{
