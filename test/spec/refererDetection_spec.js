@@ -499,14 +499,13 @@ describe('ensureProtocol', () => {
 
 describe('parseDomain', () => {
   Object.entries({
-    'example.com': 'example.com',
     'www.example.com': 'www.example.com',
     'example.com:443': 'example.com:443',
     'www.sub.example.com': 'www.sub.example.com',
     'example.com/page': 'example.com',
     'www.example.com:443/page': 'www.example.com:443',
     'http://www.example.com:443/page?query=value': 'www.example.com:443',
-    '': undefined
+    '': undefined,
   }).forEach(([input, expected]) => {
     it(`should extract domain from '${input}' -> '${expected}`, () => {
       expect(parseDomain(input)).to.equal(expected);
