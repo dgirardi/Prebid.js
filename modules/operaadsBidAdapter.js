@@ -209,8 +209,6 @@ export const spec = {
  * @returns {Request}
  */
 function buildOpenRtbBidRequest(bidRequest, bidderRequest) {
-  const pageReferrer = deepAccess(bidderRequest, 'refererInfo.referer');
-
   // build OpenRTB request body
   const payload = {
     id: bidderRequest.auctionId,
@@ -220,9 +218,10 @@ function buildOpenRtbBidRequest(bidRequest, bidderRequest) {
     device: getDevice(),
     site: {
       id: String(deepAccess(bidRequest, 'params.publisherId')),
-      domain: getDomain(pageReferrer),
-      page: pageReferrer,
-      ref: window.self === window.top ? document.referrer : '',
+      // TODO: does the fallback make sense here?
+      domain: bidderRequest?.refererInfo?.domain || window.location.hostname,
+      page: bidderRequest?.refererInfo?.page,
+      ref: bidderRequest?.refererInfo?.ref || '',
     },
     at: 1,
     bcat: getBcat(bidRequest),

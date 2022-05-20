@@ -19,7 +19,7 @@ function buildRequests(bidReqs, bidderRequest) {
   try {
     let referrer = '';
     if (bidderRequest && bidderRequest.refererInfo) {
-      referrer = bidderRequest.refererInfo.referer;
+      referrer = bidderRequest.refererInfo.page;
     }
     const onomagicImps = [];
     const publisherId = getBidIdParameter('publisherId', bidReqs[0].params);
@@ -56,7 +56,8 @@ function buildRequests(bidReqs, bidderRequest) {
       id: getUniqueIdentifierStr(),
       imp: onomagicImps,
       site: {
-        domain: parseUrl(referrer).host,
+        // TODO: does the fallback make sense here?
+        domain: bidderRequest?.refererInfo?.domain || window.location.hostname,
         page: referrer,
         publisher: {
           id: publisherId
