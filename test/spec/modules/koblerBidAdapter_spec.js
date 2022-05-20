@@ -10,7 +10,7 @@ function createBidderRequest(auctionId, timeout, pageUrl) {
     auctionId: auctionId || 'c1243d83-0bed-4fdb-8c76-42b456be17d0',
     timeout: timeout || 2000,
     refererInfo: {
-      referer: pageUrl || 'example.com'
+      page: pageUrl || 'example.com'
     }
   };
 }
@@ -301,7 +301,7 @@ describe('KoblerAdapter', function () {
       const bidderRequest = {
         auctionId: 'c1243d83-0bed-4fdb-8c76-42b456be17d0',
         refererInfo: {
-          referer: 'example.com'
+          page: 'example.com'
         }
       };
       config.setConfig({

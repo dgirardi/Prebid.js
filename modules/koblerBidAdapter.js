@@ -94,9 +94,8 @@ export const onTimeout = function (timeoutDataArray) {
 function buildOpenRtbBidRequestPayload(validBidRequests, bidderRequest) {
   const imps = validBidRequests.map(buildOpenRtbImpObject);
   const timeout = bidderRequest.timeout || config.getConfig('bidderTimeout') || DEFAULT_TIMEOUT;
-  const pageUrl = (bidderRequest.refererInfo && bidderRequest.refererInfo.referer)
-    ? bidderRequest.refererInfo.referer
-    : window.location.href;
+  // TODO: does the fallback make sense here?
+  const pageUrl = bidderRequest.refererInfo?.page || window.location.href
 
   const request = {
     id: bidderRequest.auctionId,

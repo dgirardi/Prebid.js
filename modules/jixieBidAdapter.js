@@ -116,10 +116,12 @@ function getMiscDims_() {
     mkeywords: ''
   }
   try {
+    // TODO: this should pick refererInfo from bidderRequest
     let refererInfo_ = getRefererInfo();
-    let url_ = ((refererInfo_ && refererInfo_.referer) ? refererInfo_.referer : window.location.href);
+    // TODO: does the fallback make sense here?
+    let url_ = refererInfo_?.page || window.location.href
     ret.pageurl = url_;
-    ret.domain = parseUrl(url_).host;
+    ret.domain = refererInfo_?.domain || window.location.hostname
     ret.device = getDevice_();
     let keywords = document.getElementsByTagName('meta')['keywords'];
     if (keywords && keywords.content) {
