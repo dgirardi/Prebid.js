@@ -650,15 +650,12 @@ export const spec = {
 
     // Assign payload.site from refererinfo
     if (bidderRequest.refererInfo) {
+      // TODO: reachedTop is probably not the right check here - it may be false when page is available or vice-versa
       if (bidderRequest.refererInfo.reachedTop) {
-        const sitePage = bidderRequest.refererInfo.referer;
-        deepSetValue(payload, 'site.page', sitePage);
-        deepSetValue(payload, 'site.domain', parseUrl(sitePage, {
-          noDecodeWholeURL: true
-        }).hostname);
-
-        if (canAccessTopWindow()) {
-          deepSetValue(payload, 'site.ref', getWindowTop().document.referrer);
+        deepSetValue(payload, 'site.page', bidderRequest.refererInfo.page);
+        deepSetValue(payload, 'site.domain', bidderRequest.refererInfo.domain)
+        if (bidderRequest.refererInfo.ref) {
+          deepSetValue(payload, 'site.ref', bidderRequest.refererInfo.ref);
         }
       }
     }
