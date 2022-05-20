@@ -60,7 +60,8 @@ export const spec = {
     let userExt = null;
     let {bidderRequestId, auctionId, gdprConsent, uspConsent, timeout, refererInfo} = bidderRequest || {};
 
-    const referer = refererInfo ? encodeURIComponent(refererInfo.referer) : '';
+    // TODO: is 'page' the right value here?
+    const referer = refererInfo ? encodeURIComponent(refererInfo.page) : '';
     const imp = [];
     const bidsMap = {};
 
