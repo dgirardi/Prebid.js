@@ -43,9 +43,6 @@ export function parseDomain(url) {
     return;
   }
   url = url.host;
-  if (url.startsWith('www.')) {
-    url = url.substring(4);
-  }
   return url;
 }
 
@@ -255,7 +252,6 @@ export function detectReferer(win) {
 
   return refererInfo;
 }
-
 
 /**
  * @type {function(): refererInfo}
