@@ -64,15 +64,14 @@ export const spec = {
           params.supplyPartnerId
         }/bidr?rformat=open_rtb&reqformat=rtb_json&bidder=prebid` +
         (params.query ? '&' + params.query : '');
-      let url =
-        config.getConfig('pageUrl') || bidderRequest.refererInfo.referer;
+      let url = bidderRequest.refererInfo.page;
 
       const rtbBidRequest = {
         id: auctionId,
         site: {
-          domain: helper.getTopWindowDomain(url),
+          domain: bidderRequest.refererInfo.domain,
           page: url,
-          ref: bidderRequest.refererInfo.referer
+          ref: bidderRequest.refererInfo.ref
         },
         device: {
           ua: navigator.userAgent,

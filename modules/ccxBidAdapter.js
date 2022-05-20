@@ -20,7 +20,8 @@ function _getDeviceObj () {
 
 function _getSiteObj (bidderRequest) {
   let site = {}
-  let url = config.getConfig('pageUrl') || deepAccess(window, 'location.href');
+  // TODO: does the fallback to window.location make sense?
+  let url = bidderRequest?.refererInfo?.page || window.location.href
   if (url.length > 0) {
     url = url.split('?')[0]
   }
