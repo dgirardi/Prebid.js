@@ -117,7 +117,7 @@ export const spec = {
         bidderRequestId: bid.bidderRequestId,
         uuid: bid.bidId,
         // TODO: please do not send internal data structures over the network
-        // I am not going to attempt to accomodate this, no way this is usable on their end, it changes way too frequently
+        // I am not going to attempt to accommodate this, no way this is usable on their end, it changes way too frequently
         bidderRequest
       }
       const request = {
