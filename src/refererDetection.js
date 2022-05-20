@@ -104,7 +104,7 @@ export function detectReferer(win) {
    * @property {string|null} canonicalUrl the site's canonical URL as set by the publisher, through setConfig({pageUrl}) or <link rel="canonical" />
    * @property {string|null} page the best candidate for the current page URL: `canonicalUrl`, falling back to `location`
    * @property {string|null} domain the domain portion of `page`
-   * @property {string|null} the referrer (document.referrer) to the current page, or null if not available (due to cross-origin restrictions)
+   * @property {string|null} ref the referrer (document.referrer) to the current page, or null if not available (due to cross-origin restrictions)
    * @property {string} topmostLocation of the top-most frame for which we could guess the location. Outside of cross-origin scenarios, this is equivalent to `location`.
    * @property {number} numIframes number of steps between window.self and window.top
    * @property {Array[string|null]} stack our best guess at the location for each frame, in the direction top -> self.
