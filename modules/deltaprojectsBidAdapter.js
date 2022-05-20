@@ -32,14 +32,13 @@ function buildRequests(validBidRequests, bidderRequest) {
   const id = bidderRequest.auctionId;
 
   // -- build site
-  const loc = parseUrl(bidderRequest.refererInfo.referer);
   const publisherId = setOnAny(validBidRequests, 'params.publisherId');
   const siteId = setOnAny(validBidRequests, 'params.siteId');
   const site = {
     id: siteId,
-    domain: loc.hostname,
-    page: loc.href,
-    ref: loc.href,
+    domain: bidderRequest.refererInfo.domain,
+    page: bidderRequest.refererInfo.page,
+    ref: bidderRequest.refererInfo.ref,
     publisher: { id: publisherId },
   };
 
