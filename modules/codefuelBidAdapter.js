@@ -27,8 +27,8 @@ export const spec = {
          * @return ServerRequest Info describing the request to the server.
          */
   buildRequests: function(validBidRequests, bidderRequest) {
-    const page = bidderRequest.refererInfo.referer;
-    const domain = getDomainFromURL(page)
+    const page = bidderRequest.refererInfo.page;
+    const domain = bidderRequest.refererInfo.domain;
     const ua = navigator.userAgent;
     const devicetype = getDeviceType()
     const publisher = setOnAny(validBidRequests, 'params.publisher');
