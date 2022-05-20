@@ -102,7 +102,7 @@ describe('Referer detection', () => {
         const testWindow = buildWindowTree(['https://example.com/some/page'], 'https://othersite.com/'),
           result = detectReferer(testWindow)();
 
-        expect(result).to.deep.equal({
+        sinon.assert.match(result, {
           topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
@@ -120,7 +120,7 @@ describe('Referer detection', () => {
         const testWindow = buildWindowTree(['https://example.com/some/page'], 'https://othersite.com/', 'https://example.com/canonical/page'),
           result = detectReferer(testWindow)();
 
-        expect(result).to.deep.equal({
+        sinon.assert.match(result, {
           topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
@@ -140,7 +140,7 @@ describe('Referer detection', () => {
         const testWindow = buildWindowTree(['https://example.com/some/page', 'https://example.com/other/page', 'https://example.com/third/page'], 'https://othersite.com/'),
           result = detectReferer(testWindow)();
 
-        expect(result).to.deep.equal({
+        sinon.assert.match(result, {
           topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
@@ -162,7 +162,7 @@ describe('Referer detection', () => {
         const testWindow = buildWindowTree(['https://example.com/some/page', 'https://example.com/other/page', 'https://example.com/third/page'], 'https://othersite.com/', 'https://example.com/canonical/page'),
           result = detectReferer(testWindow)();
 
-        expect(result).to.deep.equal({
+        sinon.assert.match(result, {
           topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
@@ -186,7 +186,7 @@ describe('Referer detection', () => {
         const testWindow = buildWindowTree(['https://example.com/some/page', 'https://example.com/other/page', 'https://example.com/third/page'], 'https://othersite.com/', 'https://example.com/canonical/page'),
           result = detectReferer(testWindow)();
 
-        expect(result).to.deep.equal({
+        sinon.assert.match(result, {
           topmostLocation: 'https://example.com/some/page',
           location: 'https://example.com/some/page',
           reachedTop: true,
@@ -211,7 +211,7 @@ describe('Referer detection', () => {
       const testWindow = buildWindowTree(['https://example.com/some/page', 'https://safe.frame/ad'], 'https://othersite.com/', 'https://canonical.example.com/'),
         result = detectReferer(testWindow)();
 
-      expect(result).to.deep.equal({
+      sinon.assert.match(result, {
         location: 'https://example.com/some/page',
         topmostLocation: 'https://example.com/some/page',
         reachedTop: true,
@@ -232,7 +232,7 @@ describe('Referer detection', () => {
       const testWindow = buildWindowTree(['https://example.com/some/page', 'https://safe.frame/ad', 'https://safe.frame/ad'], 'https://othersite.com/', 'https://canonical.example.com/'),
         result = detectReferer(testWindow)();
 
-      expect(result).to.deep.equal({
+      sinon.assert.match(result, {
         topmostLocation: 'https://example.com/some/page',
         location: 'https://example.com/some/page',
         reachedTop: true,
@@ -254,7 +254,7 @@ describe('Referer detection', () => {
       const testWindow = buildWindowTree(['https://example.com/some/page', 'https://safe.frame/ad', 'https://otherfr.ame/ad'], 'https://othersite.com/', 'https://canonical.example.com/'),
         result = detectReferer(testWindow)();
 
-      expect(result).to.deep.equal({
+      sinon.assert.match(result, {
         topmostLocation: 'https://safe.frame/ad',
         location: null,
         reachedTop: false,
@@ -276,7 +276,7 @@ describe('Referer detection', () => {
       const testWindow = buildWindowTree(['https://example.com/some/page', 'https://safe.frame/ad', 'https://otherfr.ame/ad'], 'https://othersite.com/', 'https://canonical.example.com/', true),
         result = detectReferer(testWindow)();
 
-      expect(result).to.deep.equal({
+      sinon.assert.match(result, {
         topmostLocation: 'https://example.com/',
         location: 'https://example.com/',
         reachedTop: false,
@@ -306,7 +306,7 @@ describe('Referer detection', () => {
 
       const result = detectReferer(testWindow)();
 
-      expect(result).to.deep.equal({
+      sinon.assert.match(result, {
         location: 'https://example.com/some/page/amp/',
         topmostLocation: 'https://example.com/some/page/amp/',
         reachedTop: true,
@@ -333,7 +333,7 @@ describe('Referer detection', () => {
 
       const result = detectReferer(testWindow)();
 
-      expect(result).to.deep.equal({
+      sinon.assert.match(result, {
         topmostLocation: 'https://example.com/some/page/amp/',
         location: 'https://example.com/some/page/amp/',
         reachedTop: true,
@@ -361,7 +361,7 @@ describe('Referer detection', () => {
 
         const result = detectReferer(testWindow)();
 
-        expect(result).to.deep.equal({
+        sinon.assert.match(result, {
           topmostLocation: 'https://example.com/some/page/amp/',
           location: 'https://example.com/some/page/amp/',
           reachedTop: false,
@@ -389,7 +389,7 @@ describe('Referer detection', () => {
 
         const result = detectReferer(testWindow)();
 
-        expect(result).to.deep.equal({
+        sinon.assert.match(result, {
           location: 'https://example.com/some/page/amp/',
           topmostLocation: 'https://example.com/some/page/amp/',
           reachedTop: false,
@@ -417,7 +417,7 @@ describe('Referer detection', () => {
 
         const result = detectReferer(testWindow)();
 
-        expect(result).to.deep.equal({
+        sinon.assert.match(result, {
           location: 'https://example.com/some/page/amp/',
           topmostLocation: 'https://example.com/some/page/amp/',
           reachedTop: false,
