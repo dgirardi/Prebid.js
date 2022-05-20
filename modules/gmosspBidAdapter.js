@@ -155,9 +155,10 @@ function getUrlInfo(refererInfo) {
   }
 
   return {
-    url: getUrl(refererInfo),
     canonicalLink: canonicalLink,
-    ref: getReferrer(),
+    // TODO: are these the right refererInfo values?
+    url: refererInfo.topmostLocation,
+    ref: refererInfo.ref || window.document.referrer,
   };
 }
 
@@ -166,26 +167,6 @@ function getMetaElements() {
     return getWindowTop.document.getElementsByTagName('meta');
   } catch (e) {
     return document.getElementsByTagName('meta');
-  }
-}
-
-function getUrl(refererInfo) {
-  if (refererInfo && refererInfo.referer) {
-    return refererInfo.referer;
-  }
-
-  try {
-    return getWindowTop.location.href;
-  } catch (e) {
-    return getWindowLocation.href;
-  }
-}
-
-function getReferrer() {
-  try {
-    return getWindowTop.document.referrer;
-  } catch (e) {
-    return document.referrer;
   }
 }
 
