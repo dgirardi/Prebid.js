@@ -4,6 +4,9 @@ import { generateUUID } from '../../../src/utils.js';
 import { expect } from 'chai';
 import * as utils from 'src/utils';
 import * as sinon from 'sinon';
+import 'modules/consentManagement.js';
+import {syncAddFPDToBidderRequest} from '../../helpers/fpd.js';
+import {mockGdprConsent} from '../../helpers/consentData.js';
 
 const BIDDER_CODE = 'tpmn';
 const BANNER_BID = {
@@ -172,12 +175,12 @@ describe('tpmnAdapterTests', function () {
     it('should have gdpr data if applicable', function () {
       const bid = utils.deepClone(BANNER_BID);
 
-      const req = Object.assign({}, BIDDER_REQUEST, {
+      const req = syncAddFPDToBidderRequest(Object.assign({}, BIDDER_REQUEST, {
         gdprConsent: {
           consentString: 'consentString',
           gdprApplies: true,
         }
-      });
+      }));
       let request = spec.buildRequests([bid], req)[0];
 
       const payload = request.data;
@@ -188,8 +191,7 @@ describe('tpmnAdapterTests', function () {
     it('should properly forward ORTB blocking params', function () {
       let bid = utils.deepClone(BANNER_BID);
       bid = utils.mergeDeep(bid, {
-        params: { bcat: ['IAB1-1'], badv: ['example.com'], bapp: ['com.example'] },
-        mediaTypes: { banner: { battr: [1] } }
+        params: { bcat: ['IAB1-1'], badv: ['example.com'], bapp: ['com.example'], battr: [1] },
       });
 
       let [request] = spec.buildRequests([bid], BIDDER_REQUEST);
