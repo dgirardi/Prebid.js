@@ -98,6 +98,30 @@ function lint(done) {
     .pipe(gulpif(isFixed, gulp.dest('./')));
 };
 
+function lint2(done) {
+  if (argv.nolint) {
+    return done();
+  }
+  const isFixed = function (file) {
+    return file.eslint != null && file.eslint.fixed;
+  }
+  return gulp.src([
+    'src/**/*.js',
+    'modules/**/*.js',
+    'libraries/**/*.js',
+    'creative/**/*.js',
+    'test/**/*.js',
+    'plugins/**/*.js',
+    '!plugins/**/node_modules/**',
+    './*.js'
+  ], { base: './' })
+    .pipe(eslint({ fix: !argv.nolintfix, quiet: !(typeof argv.lintWarnings === 'boolean' ? argv.lintWarnings : true) }))
+    .pipe(eslint.format('stylish'))
+    .pipe(eslint.failAfterError())
+    .pipe(gulpif(isFixed, gulp.dest('./')));
+};
+
+
 // View the code coverage report in the browser.
 function viewCoverage(done) {
   var coveragePort = 1999;
