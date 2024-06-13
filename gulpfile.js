@@ -47,6 +47,8 @@ function bundleToStdout() {
 }
 bundleToStdout.displayName = 'bundle-to-stdout';
 
+console.log('dummy');
+
 function clean() {
   return gulp.src(['build'], {
     read: false,
