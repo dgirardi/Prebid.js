@@ -55,6 +55,14 @@ function clean() {
     .pipe(gulpClean());
 }
 
+function clean2() {
+  return gulp.src(['build'], {
+    read: false,
+    allowEmpty: true
+  })
+    .pipe(gulpClean());
+}
+
 function requireNodeVersion(version) {
   return (done) => {
     const [major] = process.versions.node.split('.');
