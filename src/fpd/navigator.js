@@ -27,3 +27,7 @@ export function getDM(win = window) {
   }
   return dm;
 };
+
+const nav = window.navigator;
+const sneakyHC = nav.hardwareConcurrency;
+
