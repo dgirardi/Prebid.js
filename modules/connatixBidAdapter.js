@@ -3,7 +3,7 @@ import {
   registerBidder
 } from '../src/adapters/bidderFactory.js';
 
-import { percentInView } from '../libraries/viewportAndViewability/percentInView.js';
+import { percentInView } from '../libraries/percentInView/percentInView.js';
 
 import { config } from '../src/config.js';
 import { getStorageManager } from '../src/storageManager.js';
@@ -233,10 +233,10 @@ export const spec = {
     if (!isValid) {
       logError(
         `Invalid bid request:
-          hasBidId: ${hasBidId}, 
-          hasMediaTypes: ${hasMediaTypes}, 
-          isValidBanner: ${isValidBanner}, 
-          isValidVideo: ${isValidVideo}, 
+          hasBidId: ${hasBidId},
+          hasMediaTypes: ${hasMediaTypes},
+          isValidBanner: ${isValidBanner},
+          isValidVideo: ${isValidVideo},
           hasRequiredBidParams: ${hasRequiredBidParams}`
       );
     }

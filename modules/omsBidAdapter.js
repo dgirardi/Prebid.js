@@ -15,7 +15,7 @@ import {
 import {registerBidder} from '../src/adapters/bidderFactory.js';
 import {BANNER} from '../src/mediaTypes.js';
 import {ajax} from '../src/ajax.js';
-import {percentInView} from '../libraries/viewportAndViewability/percentInView.js';
+import {percentInView} from '../libraries/percentInView/percentInView.js';
 import {getUserSyncParams} from '../libraries/userSyncUtils/userSyncUtils.js';
 
 const BIDDER_CODE = 'oms';

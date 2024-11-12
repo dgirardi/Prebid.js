@@ -21,7 +21,7 @@ import { convertOrtbRequestToProprietaryNative } from '../src/native.js';
 import {getGlobal} from '../src/prebidGlobal.js';
 import {getGptSlotInfoForAdUnitCode} from '../libraries/gptUtils/gptUtils.js';
 import {ajax} from '../src/ajax.js';
-import {getViewportCoordinates} from '../libraries/viewportAndViewability/viewport.js';
+import {getViewportCoordinates} from '../libraries/viewport/viewport.js';
 
 /**
  * @typedef {import('../src/adapters/bidderFactory.js').BidRequest} BidRequest
