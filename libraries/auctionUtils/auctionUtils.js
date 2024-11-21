@@ -1,3 +1,27 @@
+export function timeoutQueue() {
+  const queue = [];
+  return {
+    submit(timeout, onResume, onTimeout) {
+      const item = [
+        onResume,
+        setTimeout(() => {
+          queue.splice(queue.indexOf(item), 1);
+          // eslint-disable-next-line prefer-promise-reject-errors
+          onTimeout();
+        }, timeout)
+      ];
+      queue.push(item);
+    },
+    resume() {
+      while (queue.length) {
+        const [onResume, timerId] = queue.shift();
+        clearTimeout(timerId);
+        onResume();
+      }
+    }
+  }
+}
+
 /**
  * @summary This is the function which will be called to exit module and continue the auction.
  */
