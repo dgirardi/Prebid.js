@@ -1223,10 +1223,6 @@ export function init(config, {delay = GreedyPromise.timeout} = {}) {
         initIdSystem({ready: true});
       }
     }
-    if (!addedUserIdHook && !startAuction.getHooks({hook: addUserIdsHook}).length) {
-      // Add ortb2.user.ext.eids even if 0 submodules are added
-      startAuction.before(addUserIdsHook, 100); // use higher priority than dataController / rtd
-    }
   });
 
   // exposing getUserIds function in global-name-space so that userIds stored in Prebid can be used by external codes.
@@ -1237,6 +1233,10 @@ export function init(config, {delay = GreedyPromise.timeout} = {}) {
   (getGlobal()).refreshUserIds = normalizePromise(refreshUserIds);
   (getGlobal()).getUserIdsAsync = normalizePromise(getUserIdsAsync);
   (getGlobal()).getUserIdsAsEidBySource = getUserIdsAsEidBySource;
+  if (!addedUserIdHook) {
+    // Add ortb2.user.ext.eids even if 0 submodules are added
+    startAuction.before(addUserIdsHook, 100); // use higher priority than dataController / rtd
+  }
 }
 
 // init config update listener to start the application
