@@ -30,7 +30,8 @@ import {timedAuctionHook, timedBidResponseHook} from '../src/utils/perfMetrics.j
 import {adjustCpm} from '../src/utils/cpm.js';
 import {getGptSlotInfoForAdUnitCode} from '../libraries/gptUtils/gptUtils.js';
 import {convertCurrency} from '../libraries/currencyUtils/currency.js';
-import {continueAuction as continueAuctionNative, resumeDelayedAuctions, timeoutQueue} from '../libraries/auctionUtils/auctionUtils.js';
+
+import {timeoutQueue} from '../libraries/timeoutQueue/timeoutQueue.js';
 
 export const FLOOR_SKIPPED_REASON = {
   NOT_FOUND: 'not_found',
