@@ -117,7 +117,7 @@ module.exports = {
             .map(lib => {
               const dir = path.resolve(libRoot, lib)
               const def = {
-                name: lib,
+                name: `lib_${lib}`,
                 test: (module) => {
                   return module.resource && module.resource.startsWith(dir)
                 }
