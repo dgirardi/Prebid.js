@@ -614,7 +614,6 @@ export function newConfig() {
     getAnyConfig,
     readConfig,
     readAnyConfig,
-    setConfig,
     mergeConfig,
     setDefaults,
     resetConfig,
