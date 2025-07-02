@@ -127,27 +127,6 @@ export function emitAdRenderSucceeded({ doc, bid, id }) {
   events.emit(AD_RENDER_SUCCEEDED, data);
 }
 
-export function handleCreativeEvent(data, bidResponse) {
-  switch (data.event) {
-    case EVENTS.AD_RENDER_FAILED:
-      emitAdRenderFail({
-        bid: bidResponse,
-        id: bidResponse.adId,
-        reason: data.info.reason,
-        message: data.info.message
-      });
-      break;
-    case EVENTS.AD_RENDER_SUCCEEDED:
-      emitAdRenderSucceeded({
-        doc: null,
-        bid: bidResponse,
-        id: bidResponse.adId
-      });
-      break;
-    default:
-      logError(`Received event request for unsupported event: '${data.event}' (adId: '${bidResponse.adId}')`);
-  }
-}
 
 export function handleNativeMessage(data, bidResponse, {resizeFn, fireTrackers = fireNativeTrackers}) {
   switch (data.action) {
