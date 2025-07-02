@@ -1,7 +1,6 @@
 import { getGlobal } from './prebidGlobal.js';
 import { logWarn } from './utils.js';
 
-const prebid = getGlobal();
 
 /**
  * This file defines the plugin points in prebid-core for AdServer-specific functionality.
