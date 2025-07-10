@@ -5,6 +5,10 @@ import {config} from './config.js';
 import { hook } from './hook.js';
 import {buildUrl, hasDeviceAccess, logError, parseUrl} from './utils.js';
 
+export function uncovered() {
+  return a + b;
+}
+
 export const dep = {
   fetch: window.fetch.bind(window),
   makeRequest: (r, o) => new Request(r, o),
