@@ -5,8 +5,10 @@ import {config} from './config.js';
 import { hook } from './hook.js';
 import {buildUrl, hasDeviceAccess, logError, parseUrl} from './utils.js';
 
-export const uncovered = (a, b) => a + b;
-  
+export const uncovered = (a, b) => {
+  return a + b;
+}
+
 export const dep = {
   fetch: window.fetch.bind(window),
   makeRequest: (r, o) => new Request(r, o),
