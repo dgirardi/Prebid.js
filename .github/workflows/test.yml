@@ -38,7 +38,7 @@ jobs:
         run: |
           git branch -D ${{ format('CI-PR-{0}', github.event.pull_request.number) }} || true
           git checkout -b ${{ format('CI-PR-{0}', github.event.pull_request.number) }}
-          git push -f
+          git push -f --set-upstream origin ${{ format('CI-PR-{0}', github.event.pull_request.number) }}
 
       - name: Checkout code (push)
         id: checkout-push
