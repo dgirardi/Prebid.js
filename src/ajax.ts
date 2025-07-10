@@ -6,7 +6,7 @@ import { hook } from './hook.js';
 import {buildUrl, hasDeviceAccess, logError, parseUrl} from './utils.js';
 
 export const uncovered = (a, b) => {
-  return a + b; //refresh
+  return a + b;
 }
 
 export const dep = {
