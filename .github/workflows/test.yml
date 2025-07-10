@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 2
     runs-on: ubuntu-latest
     outputs:
-      ref: ${{ steps.checkout-pr.outputs.ref || steps.checkout-push.outputs.ref }}
+      ref: ${{ github.event_name == 'pull_request_target' && format('AG-PR-{0}', github.event.pull_request.number) || github.ref }}
       commit: ${{ steps.checkout-pr.outputs.commit || steps.checkout-push.outputs.commit }}
     steps:
       - name: Set up Node.js
@@ -32,6 +32,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
+
+      - name: Create local branch (PR)
+        if: ${{ github.event_name == 'pull_request_target' }}
+        run: |
+          git branch -D ${{ format('AG-PR-{0}', github.event.pull_request.number) }}
+          git checkout -b ${{ format('AG-PR-{0}', github.event.pull_request.number) }}
+          git push -f
 
       - name: Checkout code (push)
         id: checkout-push
