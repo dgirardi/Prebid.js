@@ -1,4 +1,5 @@
 const TerserPlugin = require('terser-webpack-plugin');
+
 var prebid = require('./package.json');
 var path = require('path');
 const cacheDir = path.resolve(__dirname, '.cache/babel-loader');
