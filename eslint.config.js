@@ -10,6 +10,7 @@ const _ = require('lodash');
 const tseslint = require('typescript-eslint');
 const {getSourceFolders} = require('./gulpHelpers.js');
 
+
 function jsPattern(name) {
   return [`${name}/**/*.js`, `${name}/**/*.mjs`]
 }
