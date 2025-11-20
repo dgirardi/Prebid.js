@@ -2,6 +2,7 @@
 
 This file contains instructions for the Codex agent and its friends when working on tasks in this repository.
 
+
 ## Programmatic checks
 - if you don't have an eslint cache, establish one early with `npx eslint --cache --cache-strategy content`. eslint can easily take two minutes to run.
 - Before committing code changes, run lint and run tests on the files you have changed. Successful linting has no output.
