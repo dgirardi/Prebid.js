@@ -24,6 +24,7 @@ const adnAnalyticsAdapter = Object.assign(adapter({url: '', analyticsType: 'endp
     logInfo('ADN_EVENT:', [eventType, args]);
 
     switch (eventType) {
+
       
       case EVENTS.AUCTION_INIT:
         logInfo('ADN_AUCTION_INIT:', args);
