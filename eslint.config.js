@@ -11,6 +11,7 @@ const tseslint = require('typescript-eslint');
 const {getSourceFolders} = require('./gulpHelpers.js');
 const APPROVED_LOAD_EXTERNAL_SCRIPT_PATHS = require('./plugins/eslint/approvedLoadExternalScriptPaths.js');
 
+
 function jsPattern(name) {
   return [`${name}/**/*.js`, `${name}/**/*.mjs`]
 }
