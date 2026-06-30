@@ -69,18 +69,14 @@ jobs:
           sha: ${{ steps.base.outputs.base }}
           output: ${{ runner.temp }}/base-polyfills.json
       - name: Check out base branch
-        if: ${{ steps.restore.outputs.cache-hit != 'true' }}
         run: |
           git checkout ${{ steps.base.outputs.base }}
       - name: Install dependencies for base branch
-        if: ${{ steps.restore.outputs.cache-hit != 'true' }}
         uses: ./.github/actions/npm-ci
       - name: Build base branch
-        if: ${{ steps.restore.outputs.cache-hit != 'true' }}
         run: |
           npx gulp build
       - name: Cache base branch polyfills.json
-        if: ${{ steps.restore.outputs.cache-hit != 'true' }}
         uses: ./.github/actions/polyfills
         with:
           sha: ${{ steps.base.outputs.base }}
