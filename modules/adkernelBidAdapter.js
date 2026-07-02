@@ -22,6 +22,7 @@ import { getAdUnitSizes } from '../libraries/sizeUtils/sizeUtils.js';
 import { getBidFloor } from '../libraries/adkernelUtils/adkernelUtils.js';
 
 /**
+ * touch 
  * In case you're AdKernel whitelable platform's client who needs branded adapter to
  * work with Adkernel platform - DO NOT COPY THIS ADAPTER UNDER NEW NAME
  *
