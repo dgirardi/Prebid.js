@@ -49,6 +49,6 @@ jobs:
             
             if (previousComment == null ) {
                await github.rest.issues.createComment(request({issue_number, body}));
-            } else if (previousComment.body !== body)) {
+            } else if (previousComment.body !== body) {
                await github.rest.issues.updateComment(request({comment_id: previousComment.id, body}));              
             }
