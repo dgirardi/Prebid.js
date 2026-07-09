@@ -37,13 +37,13 @@ jobs:
             const path = require('path');
             const temp = '${{ runner.temp }}/artifacts';
             let {issue_number, body} = JSON.parse(fs.readFileSync(path.join(temp, 'comment.json')));
-            const whoami = (await github.rest.users.getAuthenticated().data.login);
+            const whoami = (await github.rest.users.getAuthenticated()).data.login;
             const tag = `<!-- Workflow: "${{ github.event.workflow_run.workflow.name }}" -->`;
             body = body + '\n' + tag;
             
             const request = (args) => Object.assign({owner: context.repo.owner, repo: context.repo.repo}, args);
             
-            const previousComment = (await github.rest.issues.listComments(request({issue_number}))
+            const previousComment = (await github.rest.issues.listComments(request({issue_number})))
               .data
               .find(comment => comment.user.login === whoami && comment.body.contains(tag));
             
