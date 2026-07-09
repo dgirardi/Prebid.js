@@ -38,7 +38,7 @@ jobs:
             const temp = '${{ runner.temp }}/artifacts';
             let {issue_number, body} = JSON.parse(fs.readFileSync(path.join(temp, 'comment.json')));
             const whoami = 'github-actions[bot]';
-            const tag = `<!-- Workflow: "${{ github.event.workflow_run.workflow.name }}" -->`;
+            const tag = `<!-- Workflow: "${{ github.event.workflow_run.name }}" -->`;
             body = body + '\n' + tag;
             
             const request = (args) => Object.assign({owner: context.repo.owner, repo: context.repo.repo}, args);
