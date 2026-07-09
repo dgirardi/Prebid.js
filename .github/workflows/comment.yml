@@ -45,7 +45,7 @@ jobs:
             
             const previousComment = (await github.rest.issues.listComments(request({issue_number})))
               .data
-              .find(comment => comment.user.login === whoami && comment.body.contains(tag));
+              .find(comment => comment.user.login === whoami && comment.body.includes(tag));
             
             if (previousComment == null ) {
                await github.rest.issues.createComment(request({issue_number, body}));
