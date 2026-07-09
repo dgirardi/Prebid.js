@@ -36,7 +36,7 @@ export function resetMgniConf() {
 }
 
 export const spec = {
-  code: 'maganite',
+  code: 'magnite',
   gvlid: GVL_ID,
   supportedMediaTypes: [BANNER, NATIVE, VIDEO],
   isBidRequestValid,
