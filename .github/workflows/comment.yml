@@ -37,7 +37,7 @@ jobs:
             const path = require('path');
             const temp = '${{ runner.temp }}/artifacts';
             let {issue_number, body} = JSON.parse(fs.readFileSync(path.join(temp, 'comment.json')));
-            const whoami = (await github.rest.users.getAuthenticated()).data.login;
+            const whoami = 'github-actions[bot]';
             const tag = `<!-- Workflow: "${{ github.event.workflow_run.workflow.name }}" -->`;
             body = body + '\n' + tag;
             
@@ -47,8 +47,8 @@ jobs:
               .data
               .find(comment => comment.user.login === whoami && comment.body.contains(tag));
             
-            if (previousComment != null ) {
-               await github.rest.issues.updateComment(request({comment_id: previousComment.id, body}));
-            } else {
-              await github.rest.issues.createComment(request({issue_number, body}));
+            if (previousComment == null ) {
+               await github.rest.issues.createComment(request({issue_number, body}));
+            } else if (previousComment.body !== body)) {
+               await github.rest.issues.updateComment(request({comment_id: previousComment.id, body}));              
             }
