@@ -27,6 +27,7 @@ const DATA_TYPES = {
   'ARRAY': 'array',
   'OBJECT': 'object'
 };
+
 const VIDEO_CUSTOM_PARAMS = {
   'mimes': DATA_TYPES.ARRAY,
   'minduration': DATA_TYPES.NUMBER,
