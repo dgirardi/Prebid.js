@@ -1,10 +1,10 @@
 {
-  "bs_safari_10_sierra": {
+  "bs_chrome_113_windows_10": {
     "base": "BrowserStack",
-    "os_version": "Sierra",
-    "browser": "safari",
-    "browser_version": "10.1",
+    "os_version": "10",
+    "browser": "chrome",
+    "browser_version": "50.0",
     "device": null,
-    "os": "OS X"
+    "os": "Windows"
   }
 }
