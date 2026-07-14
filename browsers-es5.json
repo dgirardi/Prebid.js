@@ -1,0 +1,10 @@
+{
+  "bs_safari_10_sierra": {
+    "base": "BrowserStack",
+    "os_version": "High Sierra",
+    "browser": "safari",
+    "browser_version": "11.1",
+    "device": null,
+    "os": "OS X"
+  }
+}
