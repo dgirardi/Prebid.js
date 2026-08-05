@@ -2,7 +2,8 @@ const path = require('path');
 const { argv } = require('yargs');
 const TerserPlugin = require('terser-webpack-plugin');
 const helpers = require('./gulpHelpers.js');
-const isES5Mode = argv.ES5;
+// PBJS_ES5 is how the flag reaches forked processes - see runKarma in gulpfile.js
+const isES5Mode = !!(argv.ES5 || process.env.PBJS_ES5);
 
 // Browsers the ES5 bundle aims to support. This list drives *polyfill* selection
 // only; syntax is forced down to ES5 unconditionally (see forceAllTransforms
@@ -106,3 +107,8 @@ module.exports = function (config) {
 
   return config;
 };
+
+// karma.conf.maker.js needs both of these: it has to transpile the test frameworks,
+// which karma serves as plain files that never reach the loaders above.
+module.exports.browsers = browsers;
+module.exports.isES5Mode = isES5Mode;

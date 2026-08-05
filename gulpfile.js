@@ -402,6 +402,12 @@ function runKarma(options, done) {
   if (!env.TEST_CHUNKS) {
     env.TEST_CHUNKS = TEST_CHUNKS;
   }
+  if (argv.ES5) {
+    // `fork` forwards the environment but not argv, so `--ES5` would not reach the
+    // karma process - and therefore not webpack.common.js, which is where it decides
+    // whether to transpile. Without this the bundle under test is never actually ES5.
+    env.PBJS_ES5 = '1';
+  }
   const child = fork('./karmaRunner.js', null, {
     env
   });
