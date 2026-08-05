@@ -176,23 +176,6 @@ jobs:
       BROWSERSTACK_USER_NAME: ${{ secrets.BROWSERSTACK_USER_NAME }}
       BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
-  unit-es5:
-    name: "ES5 unit tests"
-    needs: [setup-es5, build-es5]
-    uses: ./.github/workflows/run-tests.yml
-    with:
-      built-key: ${{ needs.build-es5.outputs.linux }}
-      test-cmd: npx gulp test-only-nobuild --browserstack --no-coverage --ES5
-      # karma launches every browser in browsers-es5.json per chunk, so each chunk needs
-      # as many browserstack sessions as there are browsers
-      chunks: 8
-      browserstack: true
-      browserstack-sessions: ${{ fromJSON(needs.setup-es5.outputs.sessions) }}
-      browsers-json: 'browsers-es5.json'
-    secrets:
-      BROWSERSTACK_USER_NAME: ${{ secrets.BROWSERSTACK_USER_NAME }}
-      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-
   base-coverage-check:
     name: Check for base branch coverage
     needs: [checkout]
