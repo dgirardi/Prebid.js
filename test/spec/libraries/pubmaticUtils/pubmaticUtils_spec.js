@@ -1,7 +1,7 @@
 /* globals describe, beforeEach, afterEach, it, sinon */
 import { expect } from 'chai';
 import * as sua from '../../../../src/fpd/sua.js';
-import { getBrowserType, getCurrentTimeOfDay, getUtmValue, getDayOfWeek, getHourOfDay } from '../../../../libraries/pubmaticUtils/pubmaticUtils.js';
+import { getBrowserType, getCurrentTimeOfDay, getUtmValue, getDayOfWeek, getHourOfDay, dep } from '../../../../libraries/pubmaticUtils/pubmaticUtils.js';
 
 describe('pubmaticUtils', () => {
   let sandbox;
@@ -130,35 +130,20 @@ describe('pubmaticUtils', () => {
   });
 
   describe('getUtmValue', () => {
-    // Setup for mocking URL and URLSearchParams
+    // Stub the injected parsers rather than the global URL/URLSearchParams: under the
+    // --ES5 build those calls are rewritten to an imported polyfill, so replacing the
+    // global has no effect on the code under test.
     let mockUrl;
     let mockUrlParams;
-    let origURL;
-    let origURLSearchParams;
 
     beforeEach(() => {
-      // Save original constructors
-      origURL = global.URL;
-      origURLSearchParams = global.URLSearchParams;
-
-      // Create mock URL and URLSearchParams
       mockUrl = {};
       mockUrlParams = {
         toString: sandbox.stub().returns(''),
         includes: sandbox.stub().returns(false)
       };
-
-      // Mock URL constructor
-      global.URL = sandbox.stub().returns(mockUrl);
-
-      // Mock URLSearchParams constructor
-      global.URLSearchParams = sandbox.stub().returns(mockUrlParams);
-    });
-
-    afterEach(() => {
-      // Restore original constructors
-      global.URL = origURL;
-      global.URLSearchParams = origURLSearchParams;
+      sandbox.stub(dep, 'parseUrl').returns(mockUrl);
+      sandbox.stub(dep, 'parseSearchParams').returns(mockUrlParams);
     });
 
     it('should return "1" when URL contains utm_source parameter', () => {

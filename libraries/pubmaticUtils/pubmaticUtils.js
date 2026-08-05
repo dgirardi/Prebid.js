@@ -56,9 +56,20 @@ export const getCurrentTimeOfDay = () => {
           : CONSTANTS.TIME_OF_DAY_VALUES.NIGHT;
 };
 
+/**
+ * Injected so that tests have something to substitute. Replacing the global `URL` does
+ * not work: under the --ES5 build these calls are rewritten to an imported polyfill, so
+ * the global is never consulted and a stub on it has no effect. Same idea as `dep` in
+ * src/ajax.ts.
+ */
+export const dep = {
+  parseUrl: (href) => new URL(href),
+  parseSearchParams: (search) => new URLSearchParams(search)
+};
+
 export const getUtmValue = () => {
-  const url = new URL(window.location?.href);
-  const urlParams = new URLSearchParams(url?.search);
+  const url = dep.parseUrl(window.location?.href);
+  const urlParams = dep.parseSearchParams(url?.search);
   return urlParams && urlParams.toString().includes(CONSTANTS.UTM) ? CONSTANTS.UTM_VALUES.TRUE : CONSTANTS.UTM_VALUES.FALSE;
 };
 
