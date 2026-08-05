@@ -54,6 +54,9 @@ module.exports = function (config) {
               }]
             ],
             plugins: [
+              // BigInt literals cannot be transpiled and would make whole files
+              // unparseable on browsers without BigInt; see the plugin for why this is safe
+              path.resolve(__dirname, './plugins/transformBigIntLiterals.js'),
               // `usage-pure` rewrites call sites to reference an imported implementation
               // (`str.replaceAll(..)` -> `_replaceAll(str).call(str, ..)`) instead of emitting
               // a bare `core-js/modules/..` import for its side effect. That matters here:

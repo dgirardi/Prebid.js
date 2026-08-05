@@ -22,6 +22,13 @@ const ES5_SERVED_FRAMEWORKS = [
   '**/node_modules/sinon/pkg/sinon.js'
 ];
 
+// `globalThis` is chrome 71 / firefox 65 / safari 12.1. Sinon's dependency chain does
+// `typeof globalThis === "undefined" ? global : globalThis` and so reaches for node's
+// `global`, which does not exist in a browser - "ReferenceError: global is not defined",
+// before any test runs. Code inside webpack gets globalThis from core-js; these files are
+// served raw and do not, so give them one.
+const GLOBAL_THIS_SHIM = 'typeof globalThis === "undefined" && (window.globalThis = window);\n';
+
 function es5FrameworkPreprocessor() {
   const babel = require('@babel/core');
   return function (content, file, done) {
@@ -39,12 +46,15 @@ function es5FrameworkPreprocessor() {
           targets: {browsers: common.browsers},
           useBuiltIns: false,
           modules: false
-        }]]
+        }]],
+        // sinon carries a BigInt literal, which preset-env cannot remove and which makes
+        // the whole file unparseable on the browsers this build targets
+        plugins: [path.resolve(__dirname, './plugins/transformBigIntLiterals.js')]
       }).code;
     } catch (e) {
       return done(e);
     }
-    done(null, transformed);
+    done(null, GLOBAL_THIS_SHIM + transformed);
   };
 }
 es5FrameworkPreprocessor.$inject = [];
