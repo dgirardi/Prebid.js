@@ -143,7 +143,10 @@ function setBrowsers(karmaConf, browserstack) {
       karmaConf.browserStack.startTunnel = false;
       karmaConf.browserStack.tunnelIdentifier = process.env.BROWSERSTACK_LOCAL_IDENTIFIER;
     }
-    karmaConf.customLaunchers = require('./browsers.json');
+    // BROWSERS_JSON lets CI point the suite at an explicit browser set - the ES5 job uses
+    // it to test the versions that build targets. `||` rather than `??`: an omitted
+    // workflow input arrives as the empty string, not as undefined.
+    karmaConf.customLaunchers = require(`./${process.env.BROWSERS_JSON || 'browsers.json'}`);
     karmaConf.browsers = Object.keys(karmaConf.customLaunchers);
   } else {
     var isDocker = require('is-docker')();
