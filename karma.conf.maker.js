@@ -7,7 +7,57 @@ var webpackConf = require('./webpack.conf.js');
 var karmaConstants = require('karma').constants;
 const path = require('path');
 const helpers = require('./gulpHelpers.js');
+const common = require('./webpack.common.js');
 const cacheDir = path.resolve(__dirname, '.cache/babel-loader');
+
+// Karma serves the test frameworks as plain files, so the ES5 babel pass in
+// webpack.common.js never sees them - and as published they are far beyond what the
+// browsers that build targets can parse: mocha uses object spread (ES2018) and sinon a
+// static class field (ES2022), which between them would require chrome 72 / safari 14.1
+// / firefox 75 just to load the page. Transpile them as they are served instead, so the
+// unit tests can run on the versions the ES5 build actually claims to support.
+const ES5_SERVED_FRAMEWORKS = [
+  '**/node_modules/mocha/mocha.js',
+  '**/node_modules/chai/chai.js',
+  '**/node_modules/sinon/pkg/sinon.js'
+];
+
+// `globalThis` is chrome 71 / firefox 65 / safari 12.1. Sinon's dependency chain does
+// `typeof globalThis === "undefined" ? global : globalThis` and so reaches for node's
+// `global`, which does not exist in a browser - "ReferenceError: global is not defined",
+// before any test runs. Code inside webpack gets globalThis from core-js; these files are
+// served raw and do not, so give them one.
+const GLOBAL_THIS_SHIM = 'typeof globalThis === "undefined" && (window.globalThis = window);\n';
+
+function es5FrameworkPreprocessor() {
+  const babel = require('@babel/core');
+  return function (content, file, done) {
+    let transformed;
+    try {
+      transformed = babel.transformSync(content, {
+        filename: file.originalPath,
+        babelrc: false,
+        configFile: false,
+        // these are UMD bundles, not modules; parsing them as modules would impose
+        // strict mode on code that does not expect it
+        sourceType: 'script',
+        compact: false,
+        presets: [['@babel/preset-env', {
+          targets: {browsers: common.browsers},
+          useBuiltIns: false,
+          modules: false
+        }]],
+        // sinon carries a BigInt literal, which preset-env cannot remove and which makes
+        // the whole file unparseable on the browsers this build targets
+        plugins: [path.resolve(__dirname, './plugins/transformBigIntLiterals.js')]
+      }).code;
+    } catch (e) {
+      return done(e);
+    }
+    done(null, GLOBAL_THIS_SHIM + transformed);
+  };
+}
+es5FrameworkPreprocessor.$inject = [];
 
 function newWebpackConfig(codeCoverage, disableFeatures) {
   // Make a clone here because we plan on mutating this object, and don't want parallel tasks to trample each other.
@@ -56,6 +106,9 @@ function newPluginsArray(browserstack) {
   plugins.push('karma-firefox-launcher');
   plugins.push('karma-opera-launcher');
   plugins.push('karma-script-launcher');
+  if (common.isES5Mode) {
+    plugins.push({'preprocessor:es5-framework': ['factory', es5FrameworkPreprocessor]});
+  }
   return plugins;
 }
 
@@ -100,7 +153,10 @@ function setBrowsers(karmaConf, browserstack) {
       karmaConf.browserStack.startTunnel = false;
       karmaConf.browserStack.tunnelIdentifier = process.env.BROWSERSTACK_LOCAL_IDENTIFIER;
     }
-    karmaConf.customLaunchers = require('./browsers.json');
+    // BROWSERS_JSON lets CI point the suite at an explicit browser set - the ES5 job uses
+    // it to test the versions that build targets. `||` rather than `??`: an omitted
+    // workflow input arrives as the empty string, not as undefined.
+    karmaConf.customLaunchers = require(`./${process.env.BROWSERS_JSON || 'browsers.json'}`);
     karmaConf.browsers = Object.keys(karmaConf.customLaunchers);
   } else {
     var isDocker = require('is-docker')();
@@ -141,7 +197,12 @@ module.exports = function(codeCoverage, browserstack, watchMode, file, disableFe
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: Object.fromEntries(files.map(f => [f, ['webpack', 'sourcemap']])),
+    preprocessors: Object.assign(
+      Object.fromEntries(files.map(f => [f, ['webpack', 'sourcemap']])),
+      common.isES5Mode
+        ? Object.fromEntries(ES5_SERVED_FRAMEWORKS.map(f => [f, ['es5-framework']]))
+        : {}
+    ),
 
     // web server port
     port: 9876,
