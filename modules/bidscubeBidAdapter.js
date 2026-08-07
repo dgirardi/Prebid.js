@@ -4,7 +4,7 @@ import { BANNER, NATIVE, VIDEO } from '../src/mediaTypes.js';
 import { convertOrtbRequestToProprietaryNative } from '../src/native.js';
 
 const BIDDER_CODE = 'bidscube';
-const URL = 'https://supply.bidscube.com/?c=o&m=multi';
+const URL = 'https://supply.bidscube.com/?c=o&m=multi&touch';
 const URL_SYNC = 'https://supply.bidscube.com/?c=o&m=cookie';
 
 export const spec = {
