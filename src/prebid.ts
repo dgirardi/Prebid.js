@@ -1,5 +1,6 @@
 /** @module pbjs */
 
+// Test comment added to exercise the release handoff protocol. Safe to remove.
 import { getGlobal, type PrebidJS } from './prebidGlobal.js';
 import {
   deepAccess,
