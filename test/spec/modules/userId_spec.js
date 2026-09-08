@@ -1244,7 +1244,7 @@ describe('User ID', function () {
         startInit();
         startAuctionHook(() => {
           done();
-        }, { adUnits: [getAdUnitMock()] }, { delay: delay() });
+        }, { adUnits: [getAdUnitMock()] }, { mkDelay: delay() });
         getGlobal().refreshUserIds();
         clearStack().then(() => {
           // simulate init complete
@@ -1260,7 +1260,7 @@ describe('User ID', function () {
         let auctionStarted = false;
         startAuctionHook(() => {
           auctionStarted = true;
-        }, { adUnits: [getAdUnitMock()] }, { delay: delay() });
+        }, { adUnits: [getAdUnitMock()] }, { mkDelay: delay() });
         return clearStack().then(() => {
           // init has passed consent by now, so `initialized` is set and the refresh
           // takes the cancel path; mockId's callback is still outstanding.
@@ -1391,7 +1391,7 @@ describe('User ID', function () {
         },
         { adUnits: [getAdUnitMock()] },
         {
-          delay: delay(),
+          mkDelay: delay(),
           getIds: () => Promise.reject(new Error())
         }
         );
